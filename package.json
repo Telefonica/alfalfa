@@ -46,7 +46,7 @@
   "dependencies": {
     "logops": "^1.0.6",
     "server-terminate": "^1.4.0",
-    "therror": "^2.1.0"
+    "therror": "^2.1.1"
   },
   "devDependencies": {
     "@types/chai": "^3.4.33",
