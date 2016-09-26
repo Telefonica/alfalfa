@@ -15,7 +15,7 @@
     "binary"
   ],
   "author": "Javier Mendiara Cañardo <jmendiara@gmail.com>",
-  "license": "Apache-2",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/Telefonica/alfalfa/issues"
   },

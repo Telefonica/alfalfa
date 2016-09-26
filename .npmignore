@@ -3,13 +3,21 @@ node_modules/
 .vscode/
 coverage/
 test/
-typings/
+src/
+example/
 
 npm-debug.log
+docker-compose.yml
+Dockerfile
 .eslintrc
 .istanbul.yml
 .jscsrc
 .travis.yml
+.dockerignore
+.editorconfig
+.env
+.npmignore
+
 tsconfig.json
 tslint.json
 
@@ -17,3 +25,4 @@ CONTRIBUTING.md
 
 *.spec.js
 *.spec.ts
+
