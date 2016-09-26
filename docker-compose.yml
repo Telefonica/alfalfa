@@ -1,0 +1,11 @@
+mongo:
+  image: mongo:3.2
+  ports:
+    - "27017:27017"
+server:
+  build: .
+  env_file: .env
+  ports:
+    - "${PORT}:${PORT}"
+  links:
+    - mongo

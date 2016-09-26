@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": false,
+    "outDir": "lib",
+    "preserveConstEnums": true,
+    "pretty": true,
+    "removeComments": true,
+    "target": "es5",
+    "lib": ["dom", "es5", "es2015.promise", "es2015.iterable"],
+    "sourceMap": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
