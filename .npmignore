@@ -5,6 +5,7 @@ coverage/
 test/
 src/
 example/
+art/
 
 npm-debug.log
 docker-compose.yml
