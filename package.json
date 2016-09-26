@@ -1,6 +1,6 @@
 {
   "name": "alfalfa",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Startup pattern for node servers",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
