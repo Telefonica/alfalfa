@@ -5,7 +5,7 @@
 Alfalfa = Alphalpha = AlphAlphA = Alpha Alpha = 2*Alpha
 _Because this will become the very beginning of every Node.js service you create_
 
-[![npm version](https://badge.fury.io/js/therror.svg)](http://badge.fury.io/js/therror)
+[![npm version](https://badge.fury.io/js/alfalfa.svg)](http://badge.fury.io/js/alfalfa)
 ![Typescript](https://img.shields.io/badge/TypeScript-.ts-blue.svg)
 
 ## Usage
