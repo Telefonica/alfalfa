@@ -1,101 +1,62 @@
 ![Alfalfa Logo][alfalfalogo]
-# alfalfa
+# alfalfa [![npm version](https://badge.fury.io/js/alfalfa.svg)](http://badge.fury.io/js/alfalfa) ![Typescript](https://img.shields.io/badge/TypeScript-.ts-blue.svg)
 
-*Opinionated startup for node services and applications to remove plumbing and boilerplate*
+*Opinionated startup for node applications. Get rid of boilerplate.*
 
-> Alfalfa = Alphalpha = AlphAlphA = Alpha Alpha = 2*Alpha
-
-_Because this will become the very beginning of every Node.js service you create_
-
-[![npm version](https://badge.fury.io/js/alfalfa.svg)](http://badge.fury.io/js/alfalfa)
-![Typescript](https://img.shields.io/badge/TypeScript-.ts-blue.svg)
+> Alfalfa comes from Alpha. _Because this will become the very beginning of every Node.js service you create_
 
 ## Usage
+
 ```js
 const express = require('express');
 const http = require('http');
 const alfalfa = require('alfalfa');
 
-let app = express(); // or any other fw... just an example
+const config = require('./config');
+
+let app = express(); // use your favorite framework
 let server = http.createServer(app); // your app will be exposed as an http server
 
 // Create a startup way to bring up your service
-let startup = new alfalfa.Startup(); 
-
-// Our service has to run a Server....
-startup.use(new alfalfa.ServerRunner({
-  server: server, // tell the server
-  port: 3000 // in the bort
-}));
-
-startup.bootstap(); // Yeah! 
-```
-
-```sh
-node server.js 
-# --> INFO  Server listening { address: '::', family: 'IPv6', port: 3000 }                                                                                                                                  
-# --> INFO  Service ready                                                                                                                                                                                   
-# <-- Crtl-C
-# --> WARN  Stopping service                                                                                                                                                                              
-# --> INFO  Ordered shutdown                                                                                                                                                                                
-# --> INFO  Server closed 
-```
-
-What's is going on there? Alfalfa will bootstrap your service by starting each one of the steps defined.
-Each step (that _****Runner_ thing) configures itself, and when it becomes ready, the next step will be started.
-Alfafa also prints traces for monitoring the startup, and manages the Operating System signals and unhandled exceptions/rejections
-
-Think this way: I've a simple service: An HTTP server 
-When staring my service in a resilent fail-fast way, these are my preconditions
-* Ensure I have a valid configuration (<- a `Runner`)
-* Start the HTTP Server to accept incoming connections (<- a `Runner`)
-
-And when I want to stop the service, this are my postconditions:
-* Stop accepting new connections and wait util current request are resolved
-
-_That is managed by Runners_
-
-Related to the process lifecicle, this is the current behaviour:
-* Listen to signals to stop the service
-* Caught unhandled exceptions (or rejections) and stop the service
-* Add names to the process for identifying in the PIDs stacks
-
-_That is managed by Startup_
-
-How to express this in `alfalfa` ?
-```js
-const alfalfa = require('../lib');
-const server = require('./server');
-const config = require('./config');
-
 let startup = new alfalfa.Startup();
 
+// Configure the runners you want to use
 startup.use(new alfalfa.ConfigRunner(config));
+startup.use(new alfalfa.ServerRunner({ server, port: 3000 }));
 
-startup.use(new alfalfa.ServerRunner({
-  server: server,
-  port: config.get('port')
-}));
-
-startup.bootstrap();
+startup.bootstap(); // Yeah!
 ```
 
-More on this can be found in the [example directory](example/)
+What's is going on here? Alfalfa bootstraps your app by starting each one of the runners defined. Each runner is a proven block that saves you from writing boilerplate and error-prone code again and again. There are several runners available. More on this can be found in the [example folder](example/).
 
-### Runners
+Moreover, alfafa also prints traces for monitoring the startup, and manages the operating system signals and unhandled exceptions/rejections.
 
-#### ServerRunner
+
+```sh
+node server.js
+
+INFO  Server listening { address: '::', family: 'IPv6', port: 3000 }
+INFO  Service ready
+^Crtl-C
+WARN  Stopping service
+INFO  Ordered shutdown
+INFO  Server closed
+````
+
+## Available Runners
+
+### ServerRunner
 Runs a node server in the specified port. Features:
- - adds listeners to the server to print the server lifecycle, allowing monitorization
- - adds support for a graceful shutdown, with a 10s grace period
+ - Adds listeners to the server to print the server lifecycle, allowing monitorization.
+ - Adds support for a graceful shutdown, with a 10s grace period.
 
-#### ConfigRunner
-Validates a service configuration. It merely be used as a pre-condition check to other runners.
-The configuration module must have a `validate()` method that throws when the validation didn't succeed
+### ConfigRunner
+Takes care of the app configuration. Features:
+- Validates that the configuration is valid. It merely be used as a pre-condition check to other runners.
+- The configuration module must have a `validate()` method that throws when the validation didn't succeed
 
-__COMMING SOON__
-`MongoRunner`
-
+### MongoRunner
+Comming soon. Will take care of the database connection.
 
 ## LICENSE
 
