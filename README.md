@@ -18,16 +18,30 @@ let app = express(); // use your favorite framework
 let server = http.createServer(app); // your app will be exposed as an http server
 
 // Create a startup way to bring up your service
-let startup = new alfalfa.Startup(); 
+let startup = new alfalfa.Startup();
 
 // Configure the runners you want to use
 startup.use(new alfalfa.ConfigRunner(config));
 startup.use(new alfalfa.ServerRunner({ server, port: 3000 }));
 
-startup.bootstap(); // Yeah! 
+startup.bootstap(); // Yeah!
 ```
 
 What's is going on here? Alfalfa bootstraps your app by starting each one of the runners defined. Each runner is a proven block that saves you from writing boilerplate and error-prone code again and again. There are several runners available. More on this can be found in the [example folder](example/).
+
+Moreover, alfafa also prints traces for monitoring the startup, and manages the operating system signals and unhandled exceptions/rejections.
+
+
+```sh
+node server.js
+
+INFO  Server listening { address: '::', family: 'IPv6', port: 3000 }
+INFO  Service ready
+^Crtl-C
+WARN  Stopping service
+INFO  Ordered shutdown
+INFO  Server closed
+````
 
 ## Available Runners
 
