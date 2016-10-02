@@ -33,11 +33,12 @@ export interface ServerRunnerOptions {
  * - adds listeners to the server to print the server lifecycle, allowing monitorization
  * - adds support for a graceful shutdown, with a 10s grace period
  */
-export class ServerRunner implements Runner<Server> {
+export class ServerRunner extends Runner<Server> {
   server: Server;
   port: number | string;
 
   constructor(opt: ServerRunnerOptions) {
+    super('Server');
     this.server = opt.server;
     this.port = opt.port;
 
@@ -51,19 +52,19 @@ export class ServerRunner implements Runner<Server> {
    * @throws {ServerRunnerErrors.PermissionDenied}
    * @throws {ServerRunnerErrors.ServerError}
    */
-  start() {
+  protected doStart(): Promise<Server> {
     return new Promise((resolve, reject) => {
       let server = this.server;
       let port = this.port;
 
       this.server.on('error', onServerError);
       this.server.once('listening', onServerListening);
-      server.on('close', onServerClose);
 
       server.listen(port);
 
+      ///////
+
       function onServerError(err: any) {
-        unsubscribe();
         if (err.code === 'EADDRINUSE') {
           reject(new ServerRunnerErrors.AddressInUse(err));
         } else if (err.code === 'EACCES') {
@@ -74,20 +75,8 @@ export class ServerRunner implements Runner<Server> {
       }
 
       function onServerListening() {
-        logger.info(server.address(), 'Server listening');
         server.removeListener('error', onServerError);
         resolve(server);
-      }
-
-      function onServerClose() {
-        unsubscribe();
-        logger.info('Server closed');
-      }
-
-      function unsubscribe() {
-        server.removeListener('error', onServerError);
-        server.removeListener('listening', onServerListening);
-        server.removeListener('close', onServerClose);
       }
     });
   }
@@ -97,25 +86,31 @@ export class ServerRunner implements Runner<Server> {
    *
    * @throws {ServerRunnerErrors.CloseError}
    */
-  stop() {
+  protected doStop(): Promise<Server> {
     let server = this.server;
-
     return new Promise((resolve, reject) => {
       if (!server.listening) {
         return resolve(server);
       }
 
-      logger.info('Ordered shutdown');
       server.terminate(function(err, byTimeout) {
-          if (err) {
-            return reject(new ServerRunnerErrors.CloseError(err));
-          }
-          if (byTimeout) {
-            logger.warn('The server stopped after timeout: Some connections were forced to end.');
-          }
-          resolve(server);
+        if (err) {
+          return reject(new ServerRunnerErrors.CloseError(err,
+            'Unable to close the server'
+          ));
+        }
+        if (byTimeout) {
+          return reject(new ServerRunnerErrors.CloseError(
+            'The server stopped after timeout: Some connections were forced to end.'
+          ));
+        }
+        resolve(server);
       });
     });
+  }
+
+  public info() {
+    return this.server.address();
   }
 }
 
@@ -175,7 +170,7 @@ export namespace ServerRunnerErrors {
    * @cause The server had an error. Check details in the error message
    * @solution Check the specific cause and try to fix it.
    */
-  export class CloseError extends Therror.WithMessage('Unable to close the server') {}
+  export class CloseError extends Therror {}
 }
 
 Errors.ServerRunner = ServerRunnerErrors;

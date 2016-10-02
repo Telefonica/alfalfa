@@ -19,6 +19,10 @@ import Therror, { Classes }  from 'therror';
 import { Runner, logger } from './';
 import { Errors } from './errors';
 
+export interface ServiceRunnerOptions {
+  /** The runners managed */
+  runners: Runner<any>[];
+}
 /**
  * Composite pattern to group several runners as an unique One
  *
@@ -28,11 +32,12 @@ import { Errors } from './errors';
  *
  * {@see https://en.wikipedia.org/wiki/Composite_pattern}
  */
-export class CompositeRunner implements Runner<any[]> {
+export class ServiceRunner extends Runner<any[]> {
   protected runners: Runner<any>[];
 
-  constructor(...runners: Runner<any>[]) {
-    this.runners = runners;
+  constructor(opt: ServiceRunnerOptions) {
+    super('Service');
+    this.runners = opt.runners;
   }
 
   /**
@@ -40,7 +45,7 @@ export class CompositeRunner implements Runner<any[]> {
    *
    * Resolves with an array of the resources initialized, as resolved by each runner
    */
-  start() {
+  protected doStart(): Promise<any[]> {
     let resolutions: any[] = [];
     let promise = Promise.resolve();
     for (let runner of this.runners) {
@@ -51,7 +56,11 @@ export class CompositeRunner implements Runner<any[]> {
           return resolved;
         });
     }
-    return promise.then(() => { return resolutions; });
+    promise = promise.then(() => {
+      return resolutions;
+    });
+
+    return promise;
   }
 
   /**
@@ -59,7 +68,7 @@ export class CompositeRunner implements Runner<any[]> {
    *
    * Any error in stopping one runner, will log the error trace, and continue with the next one
    */
-  stop() {
+  protected doStop(): Promise<any[]>{
     let resolutions: any[] = [];
     let errors: any[] = [];
     let promise = Promise.resolve();
@@ -73,17 +82,19 @@ export class CompositeRunner implements Runner<any[]> {
           errors.push(err);
         });
     }
-    return promise.then(() => {
+    promise = promise.then(() => {
       if (errors.length === 0) {
         return resolutions;
       }
 
-      throw new CompositeRunnerErrors.StopError({ errors });
-  });
+      throw new ServiceRunnerErrors.StopError({ errors });
+    });
+
+    return promise;
   }
 }
 
-export namespace CompositeRunnerErrors {
+export namespace ServiceRunnerErrors {
 
   /**
    * An error happend when trying to stop the service
@@ -98,9 +109,9 @@ export namespace CompositeRunnerErrors {
   ) {}
 }
 
-Errors.CompositeRunner = CompositeRunnerErrors;
+Errors.ServiceRunner = ServiceRunnerErrors;
 declare module './errors' {
   namespace Errors {
-    export let CompositeRunner: typeof CompositeRunnerErrors;
+    export let ServiceRunner: typeof ServiceRunnerErrors;
   }
 }

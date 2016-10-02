@@ -8,55 +8,61 @@
 ## Usage
 
 ```js
+const alfalfa = require('alfalfa');
 const express = require('express');
 const http = require('http');
-const alfalfa = require('alfalfa');
+const MongoClient = require('mongodb').MongoClient;
 
 const config = require('./config');
 
 let app = express(); // use your favorite framework
 let server = http.createServer(app); // your app will be exposed as an http server
+let client = new MongoClient();
 
 // Create a startup way to bring up your service
 let startup = new alfalfa.Startup();
 
+// Check some preconditions before starting
+startup.check(() => config.validate());
+
 // Configure the runners you want to use
-startup.use(new alfalfa.ConfigRunner(config));
 startup.use(new alfalfa.ServerRunner({ server, port: 3000 }));
+startup.use(new alfalfa.MongoRunner({ client, uri: 'mongodb://localhost:27017/alfalfa' }));
 
 startup.bootstap(); // Yeah!
 ```
 
-What's is going on here? Alfalfa bootstraps your app by starting each one of the runners defined. Each runner is a proven block that saves you from writing boilerplate and error-prone code again and again. There are several runners available. More on this can be found in the [example folder](example/).
+What's is going on here? Alfalfa bootstraps your app by starting each one of the runners defined.
+Each runner is a proven block that saves you from writing boilerplate and error-prone code again and again.
+There are several runners available. More on this can be found in the [example folder](example/).
 
-Moreover, alfafa also prints traces for monitoring the startup, and manages the operating system signals and unhandled exceptions/rejections.
-
+Moreover, alfafa also prints traces for monitoring the startup, and manages the operating system
+signals and unhandled exceptions/rejections.
 
 ```sh
 node server.js
 
-INFO  Server listening { address: '::', family: 'IPv6', port: 3000 }
-INFO  Service ready
-^Crtl-C
-WARN  Stopping service
-INFO  Ordered shutdown
-INFO  Server closed
+INFO  Server ready { address: '::', family: 'IPv6', port: 3000 }                                                  
+INFO  MongoDB ready { uri: 'mongodb://localhost:27017/alfalfa' }                                                  
+INFO  Service ready  
+<-- Crtl-C                                                                                             
+WARN  Stopping Service                                                                                          
+INFO  Server stopped                                                                                              
+INFO  MongoDB stopped                                                                                             
+INFO  Service stopped  
 ````
 
 ## Available Runners
 
 ### ServerRunner
-Runs a node server in the specified port. Features:
- - Adds listeners to the server to print the server lifecycle, allowing monitorization.
+Starts a node server in the specified port. Features:
+ - Adds listeners to the server to print its lifecycle, allowing monitorization.
  - Adds support for a graceful shutdown, with a 10s grace period.
 
-### ConfigRunner
-Takes care of the app configuration. Features:
-- Validates that the configuration is valid. It merely be used as a pre-condition check to other runners.
-- The configuration module must have a `validate()` method that throws when the validation didn't succeed
-
 ### MongoRunner
-Comming soon. Will take care of the database connection.
+Starts a mongodb client with the specified options. Features:
+ - Adds listeners to the connection to print its lifecycle, allowing monitorization.
+ - Adds support for retrying the connection at runtime and at *startup time*.
 
 ## LICENSE
 
