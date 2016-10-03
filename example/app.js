@@ -2,24 +2,24 @@
 
 const express = require('express');
 const logger = require('logops');
-const therror = require('therror');
+const Therror = require('therror');
 const therrorHandler = require('therror-connect');
 const db = require('./db');
 
-therror.Loggable.logger = logger;
+Therror.Loggable.logger = logger;
 
 let app = express();
 
-app.get('/', function(req, res) {
-  db();
-  res.send('Hello World!');
+app.get('/', function(req, res, next) {
+  getMongoVersion()
+    .then(version => res.send(`Conected to mongo v${version}`))
+    .catch(next);
 });
 
-app.get('/slow', function(req, res) {
-  db();
-  setTimeout(function() {
-    res.send('Hello Slow World!');
-  }, 5000);
+app.get('/slow', function(req, res, next) {
+  getMongoVersion()
+  .then(version =>  setTimeout(() => res.send(`Conected to mongo v${version}`), 5000))
+  .catch(next);
 });
 
 app.get('/error', function(req, res) {
@@ -27,6 +27,14 @@ app.get('/error', function(req, res) {
     throw new Error('BUM! This was not expected');
   });
 });
+
+function getMongoVersion() {
+  return db().admin().buildInfo()
+    .then(info => info.version)
+    .catch(err => {
+      throw new Therror.ServerError.ServiceUnavailable(err, 'Mongo Error');
+    });
+}
 
 app.use(therrorHandler());
 

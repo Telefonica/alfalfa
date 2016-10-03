@@ -63,7 +63,7 @@ export abstract class Runner<T> extends EventEmitter implements Runner<T> {
         return value;
       })
       .catch((err) => {
-        this.emit('error', err, this);
+        this.emit('start-error', err, this);
         throw err;
       }) ;
   }
@@ -76,7 +76,7 @@ export abstract class Runner<T> extends EventEmitter implements Runner<T> {
         return value;
       })
       .catch((err) => {
-        this.emit('error', err, this);
+        this.emit('stop-error', err, this);
         throw err;
       });
   }

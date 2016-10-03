@@ -47,16 +47,26 @@ export class MongoRunner extends Runner<Db>  {
 
     this.options = opt.options || {};
     this.options.server = this.options.server || {};
+    this.options.db = this.options.db || {};
+
     this.options.server.reconnectTries = typeof this.options.server.reconnectTries === 'undefined' ?
-      -1 :
+      -1 : // Number of retries
       this.options.server.reconnectTries;
+
+    this.options.server.reconnectInterval = typeof this.options.server.reconnectInterval === 'undefined' ?
+      1000 : // Time between retries
+      this.options.server.reconnectInterval;
+
+    this.options.db.bufferMaxEntries = typeof this.options.db.bufferMaxEntries === 'undefined' ?
+      0 : // Time between retries
+      this.options.db.bufferMaxEntries;
   }
 
   protected doStart(): Promise<Db> {
     let shouldLog = true;
 
     let promise = retryPromise<Db>(connect.bind(this), {
-      interval: this.startupRetryInterval,
+      interval: this.options.server.reconnectInterval,
       max_tries: this.options.server.reconnectTries
     })
     .then(db => {
