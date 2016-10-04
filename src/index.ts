@@ -15,37 +15,14 @@
  * limitations under the License.
  */
 import * as logops from 'logops';
+
 let logger = logops;
 
 // TODO: Declare the interface for a Logger
 export { logger };
 
-/**
- * Step to bootstrap your application
- *
- * It's in charge of executing and allocating resources and stablish preconditions
- * for running
- *
- * The Runners will add log traces using {logger} to allow monitorization of the lifecycle
- */
-export interface Runner<T> {
-  /**
-   * Starts a resource, resolving to the initialized resource ready for usage, meeting
-   * all post conditions.
-   *
-   * Rejecting with an error means that the resource couldn't be initialized
-   */
-  start(): Promise<T>;
-  /**
-   * Tears down a resource, resolving to the resource with all the uderliying dependencies freed
-   *
-   * Rejecting with an error means that the resource couldn't be freed at all
-   */
-  stop(): Promise<T>;
-}
-
 export { Errors } from './errors';
-export { ConfigRunner } from './config';
-export { CompositeRunner } from './composite';
+export { Runner } from './runner';
 export { ServerRunner } from './server';
+export { MongoRunner } from './mongo';
 export { Startup } from './startup';

@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 import { Runner, logger } from './';
-import { CompositeRunner } from './composite';
+import { ServiceRunner } from './service';
+import { PreconditionRunner, Precondition } from './precondition';
 
 /**
  * A Startup manages all the `process` relative stuff, and bootstap your service using some {Runner}
@@ -34,11 +35,29 @@ import { CompositeRunner } from './composite';
  */
 export class Startup {
   runners: Runner<any>[] = [];
+  preconditions: Precondition<any>[] = [];
+
+  /**
+   * Adds a precondition check
+   */
+  check(fn: Precondition<any>) {
+    this.preconditions.push(fn);
+    return this;
+  }
 
   /**
    * adds a {Runner} to the startup process
    */
   use(runner: Runner<any>) {
+
+    runner.on('started', (value: any, runner: Runner<any>) => {
+      let info = runner.info();
+      info ?
+        logger.info(info, `${runner.name} ready`) :
+        logger.info(`${runner.name} ready`);
+    });
+    runner.on('stopped', (value: any, runner: Runner<any>) => logger.info(`${runner.name} stopped`));
+
     this.runners.push(runner);
     return this;
   }
@@ -53,7 +72,13 @@ export class Startup {
       process.title = title;
     }
 
-    let runner = new CompositeRunner(...this.runners);
+    let preconRunner = new PreconditionRunner({ preconditions: this.preconditions });
+    this.runners.unshift(preconRunner);
+
+    let serviceRunner = new ServiceRunner({ runners: this.runners });
+    serviceRunner.on('started', (value: any, runner: Runner<any>) => logger.info(`${runner.name} ready`));
+    serviceRunner.on('stopping', (runner: Runner<any>) => logger.warn(`Stopping ${runner.name}`));
+    serviceRunner.on('stopped', (value: any, runner: Runner<any>) => logger.info(`${runner.name} stopped`));
 
     process.on('SIGTERM', stop);
     process.on('SIGINT', stop); // Crtl-C
@@ -61,7 +86,7 @@ export class Startup {
     // process.on('SIGHUP', stop);
     process.on('uncaughtException', (err: any) => {
       logger.fatal(err, 'UncaughtException');
-      runner.stop()
+      serviceRunner.stop()
         .then(null, err => logger.error(err))
         .then(() => process.exit(2));
     });
@@ -74,17 +99,12 @@ export class Startup {
     /////////
 
     function start() {
-      return runner.start()
-          .then(res => {
-            logger.info('Service ready');
-            return res;
-          })
+      return serviceRunner.start()
           .catch(fail);
     }
 
     function stop() {
-      logger.warn('Stopping service');
-      return runner.stop()
+      return serviceRunner.stop()
           .then(success)
           .catch(fail);
     }
