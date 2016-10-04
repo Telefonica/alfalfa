@@ -16,7 +16,7 @@
  */
 import { Runner, logger } from './';
 import { ServiceRunner } from './service';
-import { PreconRunner, Precondition } from './precon';
+import { PreconditionRunner, Precondition } from './precondition';
 
 /**
  * A Startup manages all the `process` relative stuff, and bootstap your service using some {Runner}
@@ -72,7 +72,7 @@ export class Startup {
       process.title = title;
     }
 
-    let preconRunner = new PreconRunner({ preconditions: this.preconditions });
+    let preconRunner = new PreconditionRunner({ preconditions: this.preconditions });
     this.runners.unshift(preconRunner);
 
     let serviceRunner = new ServiceRunner({ runners: this.runners });

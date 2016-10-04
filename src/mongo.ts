@@ -34,10 +34,6 @@ export class MongoRunner extends Runner<Db>  {
   uri: string;
   options: MongoClientOptions;
 
-  // MongoDriver reconnects every second
-  protected startupRetryInterval = 1000;
-  protected startupReconnectTries: number;
-
   private db: Db;
 
   constructor(opt: MongoRunnerOptions) {
@@ -49,15 +45,15 @@ export class MongoRunner extends Runner<Db>  {
     this.options.server = this.options.server || {};
     this.options.db = this.options.db || {};
 
-    this.options.server.reconnectTries = typeof this.options.server.reconnectTries === 'undefined' ?
+    this.options.server.reconnectTries = this.options.server.reconnectTries == null ?
       -1 : // Number of retries
       this.options.server.reconnectTries;
 
-    this.options.server.reconnectInterval = typeof this.options.server.reconnectInterval === 'undefined' ?
+    this.options.server.reconnectInterval = this.options.server.reconnectInterval == null ?
       1000 : // Time between retries
       this.options.server.reconnectInterval;
 
-    this.options.db.bufferMaxEntries = typeof this.options.db.bufferMaxEntries === 'undefined' ?
+    this.options.db.bufferMaxEntries = this.options.db.bufferMaxEntries == null ?
       0 : // Time between retries
       this.options.db.bufferMaxEntries;
   }

@@ -68,7 +68,7 @@ export class ServiceRunner extends Runner<any[]> {
    *
    * Any error in stopping one runner, will log the error trace, and continue with the next one
    */
-  protected doStop(): Promise<any[]>{
+  protected doStop(): Promise<any[]> {
     let resolutions: any[] = [];
     let errors: any[] = [];
     let promise = Promise.resolve();
@@ -95,7 +95,6 @@ export class ServiceRunner extends Runner<any[]> {
 }
 
 export namespace ServiceRunnerErrors {
-
   /**
    * An error happend when trying to stop the service
    *

@@ -31,7 +31,7 @@ export interface PreconRunnerConfig {
 /**
  * Validates an app configuration. It merely be used as a pre-condition check to other runners or services
  */
-export class PreconRunner extends Runner<void> {
+export class PreconditionRunner extends Runner<void> {
 
   preconditions: Precondition<any>[] = [];
 
