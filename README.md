@@ -37,7 +37,7 @@ Each runner is a proven block that saves you from writing boilerplate and error-
 There are several runners available. More on this can be found in the [example folder](example/).
 
 Moreover, alfafa also prints traces for monitoring the startup, and manages the operating system
-signals and unhandled exceptions/rejections.
+signals and unhandled exceptions/rejections/warnings.
 
 ```sh
 node server.js
