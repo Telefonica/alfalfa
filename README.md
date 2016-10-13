@@ -57,7 +57,7 @@ INFO  Service stopped
 ### ServerRunner
 Starts a node server in the specified port. Features:
  - Adds listeners to the server to print its lifecycle, allowing monitorization.
- - Adds support for a graceful shutdown, with a 10s grace period.
+ - Adds support for a graceful shutdown, with a 9.5s grace period.
 
 ### MongoRunner
 Starts a mongodb client with the specified options. Features:

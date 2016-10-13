@@ -42,7 +42,9 @@ export class ServerRunner extends Runner<Server> {
     this.server = opt.server;
     this.port = opt.port;
 
-    enableTerminate(this.server);
+    // Docker will kill the container by default in 10s
+    // Give some time to log things before exiting
+    enableTerminate(this.server, { timeout: 9500 });
   }
 
   /**

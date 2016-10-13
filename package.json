@@ -37,7 +37,7 @@
     "info": "npm-scripts-info",
     "lint": "tslint './src/**/*.ts'",
     "prepublish": "npm run build",
-    "start": "./example/bin/resistart",
+    "start": "./example/bin/server",
     "security": "nsp check",
     "test": "npm run build && mocha -R spec 'lib/**/*.spec.js'",
     "watch": "npm-run-all --parallel watch:*",
