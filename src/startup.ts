@@ -80,19 +80,25 @@ export class Startup {
     serviceRunner.on('stopping', (runner: Runner<any>) => logger.warn(`Stopping ${runner.name}`));
     serviceRunner.on('stopped', (value: any, runner: Runner<any>) => logger.info(`${runner.name} stopped`));
 
-    process.on('SIGTERM', stop);
-    process.on('SIGINT', stop); // Crtl-C
-    // process.on('SIGQUIT', stop);
-    // process.on('SIGHUP', stop);
+    process.once('SIGTERM', stopWith('SIGTERM')); // Sent by Docker, node-express-domaining and cluster management
+    process.once('SIGINT',  stopWith('SIGINT')); // Crtl-C, pm2
+    process.once('SIGHUP',  stopWith('SIGHUP')); // SIGHUP is generated on Windows when the console window is closed
+    // process.on('SIGQUIT', stopWith('SIGQUIT')); // Should generate a dump
+    process.once('SIGUSR2', stopWith('SIGUSR2')); // Sent by nodemon when restarts the server
+
     process.on('uncaughtException', (err: any) => {
       logger.fatal(err, 'UncaughtException');
       serviceRunner.stop()
-        .then(null, err => logger.error(err))
-        .then(() => process.exit(2));
+        .then(() => process.exit(1))
+        .catch(err => {
+          logger.error(err);
+          process.exit(1);
+        });
     });
-    process.on('unhandledRejection', (err: any) => {
-      logger.warn(err, 'UnhandledRejection');
-    });
+     // https://nodejs.org/api/process.html#process_event_warning
+    process.on('warning', (warning: Error) => logger.warn(warning));
+    // https://nodejs.org/api/process.html#process_event_unhandledrejection
+    process.on('unhandledRejection', (err: Error | any) => logger.warn(err, 'UnhandledRejection'));
 
     return start();
 
@@ -100,22 +106,21 @@ export class Startup {
 
     function start() {
       return serviceRunner.start()
-          .catch(fail);
+          .catch(err => {
+            logger.fatal(err);
+            process.exit(1); // General error: Exit with generic error
+          });
     }
 
-    function stop() {
-      return serviceRunner.stop()
-          .then(success)
-          .catch(fail);
-    }
-
-    function success() {
-      process.exit(0);
-    }
-
-    function fail(err: any) {
-      logger.fatal(err);
-      process.exit(1);
+    function stopWith(signal: string) {
+      return function stop() {
+        return serviceRunner.stop()
+            .then(() => process.kill(process.pid, signal))
+            .catch((err) => {
+              logger.error(err);
+              process.kill(process.pid, signal);
+            });
+      };
     }
   }
 }
