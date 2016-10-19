@@ -22,6 +22,8 @@ import { Runner, logger } from './';
 import { Errors } from './errors';
 
 export interface ServerRunnerOptions {
+  /** This server name */
+  name?: string;
   /** The http(s) server to run */
   server: Server;
   /** The port (or path) the server will listen to */
@@ -38,7 +40,7 @@ export class ServerRunner extends Runner<Server> {
   port: number | string;
 
   constructor(opt: ServerRunnerOptions) {
-    super('Server');
+    super(opt.name || 'Server');
     this.server = opt.server;
     this.port = opt.port;
 

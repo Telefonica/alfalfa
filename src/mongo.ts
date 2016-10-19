@@ -24,6 +24,7 @@ import * as retryPromise from 'bluebird-retry';
 
 
 export interface MongoRunnerOptions {
+  name?: string;
   client: MongoClient;
   uri: string;
   options: MongoClientOptions;
@@ -37,7 +38,7 @@ export class MongoRunner extends Runner<Db>  {
   private db: Db;
 
   constructor(opt: MongoRunnerOptions) {
-    super('MongoDB');
+    super(opt.name || 'MongoDB');
     this.client = opt.client;
     this.uri = opt.uri;
 

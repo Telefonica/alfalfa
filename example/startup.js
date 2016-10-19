@@ -10,6 +10,7 @@ let startup = new alfalfa.Startup();
 startup.check(() => config.validate());
 
 startup.use(new alfalfa.ServerRunner({
+  name: 'MyServer',
   server,
   port: config.get('port')
 }));
