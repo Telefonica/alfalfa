@@ -25,36 +25,27 @@ import { EventEmitter } from 'events';
  *
  * The Runners will add log traces using {logger} to allow monitorization of the lifecycle
  */
-export interface Runner<T> {
+export abstract class Runner<T> extends EventEmitter {
   /**
    * The optional name for this Runner
    */
   name: string;
-  /**
-   * Starts a resource, resolving to the initialized resource ready for usage, meeting
-   * all post conditions.
-   *
-   * Rejecting with an error means that the resource couldn't be initialized
-   */
-  start(): Promise<T>;
-  /**
-   * Tears down a resource, resolving to the resource with all the uderliying dependencies freed
-   *
-   * Rejecting with an error means that the resource couldn't be freed at all
-   */
-  stop(): Promise<T>;
-}
 
-export abstract class Runner<T> extends EventEmitter implements Runner<T> {
-  constructor(public name: string) {
+  constructor(name: string) {
     super();
+    this.name = name;
   }
 
   protected abstract doStart(): Promise<T>
   protected abstract doStop(): Promise<T>
 
   public info(): any { ; };
-
+  /**
+   * Starts a resource, resolving to the initialized resource ready for usage, meeting
+   * all post conditions.
+   *
+   * Rejecting with an error means that the resource couldn't be initialized
+   */
   public start(): Promise<T> {
     this.emit('starting', this);
     return this.doStart()
@@ -67,7 +58,11 @@ export abstract class Runner<T> extends EventEmitter implements Runner<T> {
         throw err;
       }) ;
   }
-
+  /**
+   * Tears down a resource, resolving to the resource with all the uderliying dependencies freed
+   *
+   * Rejecting with an error means that the resource couldn't be freed at all
+   */
   public stop(): Promise<T> {
     this.emit('stopping', this);
     return this.doStop()

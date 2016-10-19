@@ -44,6 +44,8 @@
     "watch:ts": "tsc -w"
   },
   "dependencies": {
+    "@types/mongodb": "^2.1.33",
+    "@types/node": "^6.0.40",
     "bluebird": "^3.4.6",
     "bluebird-retry": "^0.8.0",
     "logops": "^1.0.6",
@@ -57,8 +59,6 @@
     "@types/convict": "^0.6.33",
     "@types/lodash": "^4.14.36",
     "@types/mocha": "^2.2.32",
-    "@types/mongodb": "^2.1.33",
-    "@types/node": "^6.0.40",
     "@types/sinon": "^1.16.30",
     "@types/sinon-chai": "^2.7.27",
     "chai": "^3.5.0",
