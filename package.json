@@ -24,7 +24,6 @@
     "info": "List available scripts",
     "build": "Builds the plugin, by cleaning and compiling TypesScript into Javascript",
     "compile": "Just compiles your code",
-    "dev": "Watch codebase, trigger compile when source code changes",
     "lint": "Check coding guidelines conformance",
     "security": "Check if your dependencies are secure",
     "test": "Test your codebase"
@@ -33,14 +32,13 @@
     "build": "npm run clean && npm run compile",
     "clean": "shx rm -fR ./lib",
     "compile": "tsc",
-    "dev": "npm run build && npm run watch",
     "info": "npm-scripts-info",
     "lint": "tslint './src/**/*.ts'",
     "prepublish": "npm run build",
     "start": "./example/bin/server",
     "security": "nsp check",
     "test": "npm run build && mocha -R spec 'lib/**/*.spec.js'",
-    "watch": "npm-run-all --parallel watch:*",
+    "watch": "npm run build && npm-run-all --parallel watch:*",
     "watch:ts": "tsc -w"
   },
   "dependencies": {
@@ -56,19 +54,11 @@
     "@types/bluebird": "^3.0.33",
     "@types/bluebird-retry": "0.0.30",
     "@types/chai": "^3.4.33",
-    "@types/convict": "^0.6.33",
-    "@types/lodash": "^4.14.36",
     "@types/mocha": "^2.2.32",
     "@types/sinon": "^1.16.30",
     "@types/sinon-chai": "^2.7.27",
     "chai": "^3.5.0",
-    "commander": "^2.9.0",
-    "convict": "^1.4.0",
-    "convict-commander": "^1.0.0",
-    "dotenv": "^2.0.0",
-    "express": "^4.14.0",
     "mocha": "^3.0.2",
-    "mongodb": "^2.2.10",
     "nodemon": "^1.9.2",
     "npm-run-all": "^3.1.0",
     "npm-scripts-info": "^0.3.6",
@@ -76,10 +66,8 @@
     "shx": "^0.1.4",
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
-    "therror-connect": "^1.0.1",
     "tslint": "^3.15.1",
-    "typescript": "^2.0.0",
-    "validator": "^6.0.0"
+    "typescript": "^2.0.3"
   },
   "engines": {
     "node": ">=4"

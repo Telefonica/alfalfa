@@ -1,0 +1,15 @@
+version: '2'
+services:
+  seed:
+    build: .
+    env_file: .env
+    environment:
+      - LOGOPS_FORMAT=dev # Just for seeing nice logs.
+      - ALFALFA_DB=mongodb://mongo:27017/seed
+    restart: unless-stopped
+    ports:
+      - ${ALFALFA_PORT}:3000
+    links:
+      - mongo
+  mongo:
+    image: mongo:3.2

@@ -2,8 +2,8 @@
 const program = require('commander');
 const convictCommander = require('convict-commander');
 
-const config = require('../config');
-const startup = require('../startup');
+const config = require('../lib/config');
+const startup = require('../lib/startup');
 
 convictCommander(program);
 
