@@ -36,6 +36,8 @@ What's is going on here? Alfalfa bootstraps your app by starting each one of the
 Each runner is a proven block that saves you from writing boilerplate and error-prone code again and again.
 There are several runners available. More on this can be found in the [example folder](example/).
 
+![Alfalfa demo][alfalfademo]
+
 Moreover, alfafa also prints traces for monitoring the startup, and manages the operating system
 signals and unhandled exceptions/rejections/warnings.
 
@@ -81,3 +83,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 [alfalfalogo]: art/alfalfa-githubbanner.png
+[alfalfademo]: art/demo.gif
