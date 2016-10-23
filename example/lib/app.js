@@ -18,13 +18,13 @@ let app = express();
 
 app.get('/', function(req, res, next) {
   getMongoVersion()
-    .then(version => res.send(`Conected to mongo v${version}`))
+    .then(version => res.json({version}))
     .catch(next);
 });
 
 app.get('/slow', function(req, res, next) {
   getMongoVersion()
-  .then(version =>  setTimeout(() => res.send(`Conected to mongo v${version}`), 5000))
+  .then(version =>  setTimeout(() => res.json({version}), 5000))
   .catch(next);
 });
 
