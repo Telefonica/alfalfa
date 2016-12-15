@@ -22,7 +22,6 @@ import { MongoClient, Db, MongoClientOptions } from 'mongodb';
 import * as Bluebird from 'bluebird';
 import * as retryPromise from 'bluebird-retry';
 
-
 export interface MongoRunnerOptions {
   name?: string;
   client: MongoClient;

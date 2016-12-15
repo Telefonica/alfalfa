@@ -10,7 +10,7 @@
   "author": "Javier Mendiara Cañardo <jmendiara@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "alfalfa": "^2.1.0",
+    "alfalfa": "^2.2.0",
     "commander": "^2.9.0",
     "convict": "^1.5.0",
     "convict-commander": "^1.0.0",
