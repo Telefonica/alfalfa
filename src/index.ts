@@ -25,4 +25,5 @@ export { Errors } from './errors';
 export { Runner } from './runner';
 export { ServerRunner } from './server';
 export { MongoRunner } from './mongo';
+export { HTTPAgentRunner } from './httpagent';
 export { Startup } from './startup';

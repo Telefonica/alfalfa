@@ -18,6 +18,7 @@ const config = require('./config');
 let app = express(); // use your favorite framework
 let server = http.createServer(app); // your app will be exposed as an http server
 let client = new MongoClient();
+let agent = new http.Agent({ keepAlive: true });
 
 // Create a startup way to bring up your service
 let startup = new alfalfa.Startup();
@@ -26,10 +27,11 @@ let startup = new alfalfa.Startup();
 startup.check(() => config.validate());
 
 // Configure the runners you want to use
+startup.use(new alfalfa.HTTPAgentRunner({ agent }));
 startup.use(new alfalfa.ServerRunner({ server, port: 3000 }));
 startup.use(new alfalfa.MongoRunner({ client, uri: 'mongodb://localhost:27017/alfalfa' }));
 
-startup.bootstap(); // Yeah!
+startup.bootstap('Service'); // Yeah! Create the process with title 'Service' 
 ```
 
 What's is going on here? Alfalfa bootstraps your app by starting each one of the runners defined.
@@ -65,6 +67,10 @@ Starts a node server in the specified port. Features:
 Starts a mongodb client with the specified options. Features:
  - Adds listeners to the connection to print its lifecycle, allowing monitorization.
  - Adds support for retrying the connection at runtime and at *startup time*.
+
+### HTTPAgentRunner
+Tracks a KeepAlived [http.Agent](https://nodejs.org/api/http.html#http_new_agent_options). Features:
+ - Destroys the keep alived sokets when the service shutdows
 
 ## LICENSE
 
