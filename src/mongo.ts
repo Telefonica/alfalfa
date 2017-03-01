@@ -42,28 +42,27 @@ export class MongoRunner extends Runner<Db>  {
     this.uri = opt.uri;
 
     this.options = opt.options || {};
-    this.options.server = this.options.server || {};
-    this.options.db = this.options.db || {};
 
-    this.options.server.reconnectTries = this.options.server.reconnectTries == null ?
+
+    this.options.reconnectTries = this.options.reconnectTries == null ?
       -1 : // Number of retries
-      this.options.server.reconnectTries;
+      this.options.reconnectTries;
 
-    this.options.server.reconnectInterval = this.options.server.reconnectInterval == null ?
+    this.options.reconnectInterval = this.options.reconnectInterval == null ?
       1000 : // Time between retries
-      this.options.server.reconnectInterval;
+      this.options.reconnectInterval;
 
-    this.options.db.bufferMaxEntries = this.options.db.bufferMaxEntries == null ?
+    this.options.bufferMaxEntries = this.options.bufferMaxEntries == null ?
       0 : // Time between retries
-      this.options.db.bufferMaxEntries;
+      this.options.bufferMaxEntries;
   }
 
   protected doStart(): Promise<Db> {
     let shouldLog = true;
 
     let promise = retryPromise<Db>(connect.bind(this), {
-      interval: this.options.server.reconnectInterval,
-      max_tries: this.options.server.reconnectTries
+      interval: this.options.reconnectInterval,
+      max_tries: this.options.reconnectTries
     })
     .then(db => {
       this.db = db;
