@@ -42,7 +42,7 @@
     "watch:ts": "tsc -w"
   },
   "dependencies": {
-    "@types/mongodb": "^2.1.33",
+    "@types/mongodb": "^2.2.24",
     "@types/node": "^6.0.40",
     "bluebird": "^3.4.6",
     "bluebird-retry": "^0.8.0",
