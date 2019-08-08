@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@hapi/joi": "15.1.0",
+    "alfalfa": "^3.0.0",
     "commander": "^2.20.0",
     "convict": "^2.0.0",
     "convict-commander": "^2.0.0",

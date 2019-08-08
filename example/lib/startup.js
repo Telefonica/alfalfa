@@ -1,6 +1,6 @@
 'use strict';
 
-const alfalfa = require('../../lib/');
+const alfalfa = require('alfalfa');
 const server = require('./server');
 const client = require('./db');
 const httpAgent = require('./httpagent');
