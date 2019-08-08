@@ -16,10 +16,8 @@
  */
 import * as logops from 'logops';
 
-let logger = logops;
-
 // TODO: Declare the interface for a Logger
-export { logger };
+export { logops as logger };
 
 export { Errors } from './errors';
 export { Runner } from './runner';

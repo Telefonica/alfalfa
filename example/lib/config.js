@@ -1,8 +1,7 @@
 'use strict';
 
-require('dotenv').config({ silent: true });
 const convict = require('convict');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 
 convict.addFormat({
   name: 'mongo-uri',

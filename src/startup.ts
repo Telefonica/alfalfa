@@ -86,23 +86,26 @@ export class Startup {
     // process.on('SIGQUIT', stopWith('SIGQUIT')); // Should generate a dump
     process.once('SIGUSR2', stopWith('SIGUSR2')); // Sent by nodemon when restarts the server
 
-    process.on('uncaughtException', (err: any) => {
-      logger.fatal(err, 'UncaughtException');
-      serviceRunner.stop()
-        .then(() => process.exit(1))
-        .catch(err => {
-          logger.error(err);
-          process.exit(1);
-        });
-    });
+    process.on('uncaughtException', fatal('uncaughtException'));
+    process.on('unhandledRejection', fatal('unhandledRejection'));
      // https://nodejs.org/api/process.html#process_event_warning
     process.on('warning', (warning: Error) => logger.warn(warning));
-    // https://nodejs.org/api/process.html#process_event_unhandledrejection
-    process.on('unhandledRejection', (err: Error | any) => logger.warn(err, 'UnhandledRejection'));
 
     return start();
 
     /////////
+
+    function fatal(type: string) {
+      return function (err: any) {
+        logger.fatal(err, type);
+        serviceRunner.stop()
+          .then(() => process.exit(1))
+          .catch(err => {
+            logger.error(err);
+            process.exit(1);
+          });
+      };
+    }
 
     function start() {
       return serviceRunner.start()

@@ -11,13 +11,14 @@
 const alfalfa = require('alfalfa');
 const express = require('express');
 const http = require('http');
+// Compatible with > 3.2 driver
 const MongoClient = require('mongodb').MongoClient;
 
 const config = require('./config');
 
 let app = express(); // use your favorite framework
 let server = http.createServer(app); // your app will be exposed as an http server
-let client = new MongoClient();
+let client = new MongoClient('mongodb://localhost:27017/alfalfa');
 let agent = new http.Agent({ keepAlive: true });
 
 // Create a startup way to bring up your service
@@ -29,9 +30,9 @@ startup.check(() => config.validate());
 // Configure the runners you want to use
 startup.use(new alfalfa.HTTPAgentRunner({ agent }));
 startup.use(new alfalfa.ServerRunner({ server, port: 3000 }));
-startup.use(new alfalfa.MongoRunner({ client, uri: 'mongodb://localhost:27017/alfalfa' }));
+startup.use(new alfalfa.MongoRunner({ client }));
 
-startup.bootstap('Service'); // Yeah! Create the process with title 'Service' 
+startup.bootstap('Service'); // Yeah! Create the process with title 'Service'
 ```
 
 What's is going on here? Alfalfa bootstraps your app by starting each one of the runners defined.
@@ -46,14 +47,14 @@ signals and unhandled exceptions/rejections/warnings.
 ```sh
 node server.js
 
-INFO  Server ready { address: '::', family: 'IPv6', port: 3000 }                                                  
-INFO  MongoDB ready { uri: 'mongodb://localhost:27017/alfalfa' }                                                  
-INFO  Service ready  
-<-- Crtl-C                                                                                             
-WARN  Stopping Service                                                                                          
-INFO  Server stopped                                                                                              
-INFO  MongoDB stopped                                                                                             
-INFO  Service stopped  
+INFO  Server ready { address: '::', family: 'IPv6', port: 3000 }
+INFO  MongoDB ready { uri: 'mongodb://localhost:27017/alfalfa' }
+INFO  Service ready
+<-- Crtl-C
+WARN  Stopping Service
+INFO  Server stopped
+INFO  MongoDB stopped
+INFO  Service stopped
 ````
 
 ## Available Runners
