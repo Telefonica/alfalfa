@@ -18,5 +18,6 @@
  * All the erros, grouped by Runner, that this module can throw;
  */
 export module Errors {
+  // tslint:disable-next-line
   ; // Needed by Typescript to efectively declare the namespace. WTF
 }

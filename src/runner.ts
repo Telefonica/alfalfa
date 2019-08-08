@@ -36,10 +36,11 @@ export abstract class Runner<T> extends EventEmitter {
     this.name = name;
   }
 
-  protected abstract doStart(): Promise<T>
-  protected abstract doStop(): Promise<T>
+  protected abstract doStart(): Promise<T>;
+  protected abstract doStop(): Promise<T>;
 
-  public info(): any { ; };
+  // tslint:disable-next-line
+  public info(): any { }
   /**
    * Starts a resource, resolving to the initialized resource ready for usage, meeting
    * all post conditions.

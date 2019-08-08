@@ -19,14 +19,12 @@ import Therror, { Classes }  from 'therror';
 import { Runner, logger } from './';
 import { Errors } from './errors';
 import { MongoClient, Db, MongoClientOptions } from 'mongodb';
-import * as Bluebird from 'bluebird';
 import * as retryPromise from 'bluebird-retry';
 
 export interface MongoRunnerOptions {
   name?: string;
   client: MongoClient;
-  uri: string;
-  options: MongoClientOptions;
+  options?: Pick<MongoClientOptions, 'reconnectTries' | 'reconnectInterval'>;
 }
 
 export class MongoRunner extends Runner<Db>  {
@@ -39,28 +37,22 @@ export class MongoRunner extends Runner<Db>  {
   constructor(opt: MongoRunnerOptions) {
     super(opt.name || 'MongoDB');
     this.client = opt.client;
-    this.uri = opt.uri;
 
-    this.options = opt.options || {};
+    this.options = {};
 
 
     this.options.reconnectTries = this.options.reconnectTries == null ?
-      -1 : // Number of retries
+      30 : // Number of retries
       this.options.reconnectTries;
 
     this.options.reconnectInterval = this.options.reconnectInterval == null ?
       1000 : // Time between retries
       this.options.reconnectInterval;
-
-    this.options.bufferMaxEntries = this.options.bufferMaxEntries == null ?
-      0 : // Time between retries
-      this.options.bufferMaxEntries;
   }
 
   protected doStart(): Promise<Db> {
-    let shouldLog = true;
 
-    let promise = retryPromise<Db>(connect.bind(this), {
+    return retryPromise<Db>(() => this.connect(), {
       interval: this.options.reconnectInterval,
       max_tries: this.options.reconnectTries
     })
@@ -70,32 +62,22 @@ export class MongoRunner extends Runner<Db>  {
       this.db.on('reconnect', this.onDatabaseReconnect);
       this.db.on('error', this.onDatabaseError);
       this.db.on('timeout', this.onDatabaseTimeout);
-    });
-
-    // Resolving to make a cast from Bluebird Promise to a ES6 promise. WTF
-    // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/11027
-    return Promise.resolve(promise);
-
-    ///////
-
-    function connect(this: MongoRunner): Promise<Db> {
-      // wrap the Promise in a Promise one
-      let uri = this.uri;
-      return this.client.connect(this.uri, this.options)
-        .catch(err => {
-          let error = new MongoRunnerErrors.DatabaseConnectionError(err, 'Error connecting to database ${uri}', { uri });
-          logOnce(error);
-          throw error;
-        });
-    }
-
-    function logOnce(err: Error) {
-      if (shouldLog) {
-        logger.error(err);
-        shouldLog = false;
-      }
-    }
+    })
+    .then(() => Promise.resolve(this.db));
   }
+
+  private connect(this: MongoRunner): Promise<Db> {
+    // wrap the Promise in a Promise one
+    return this.client.connect()
+      .then(() => this.client.db())
+      .catch((err: any) => {
+        let error = new MongoRunnerErrors.DatabaseConnectionError(err, 'Error connecting to database');
+        logger.error(error);
+        throw error;
+      });
+  }
+
+
 
   protected doStop(): Promise<Db> {
     if (!this.db) {
@@ -107,7 +89,7 @@ export class MongoRunner extends Runner<Db>  {
     this.db.removeListener('error', this.onDatabaseError);
     this.db.removeListener('timeout', this.onDatabaseTimeout);
 
-    return this.db.close()
+    return this.client.close()
       .then(() => this.db);
   }
 

@@ -1,8 +1,8 @@
 'use strict';
 
-const alfalfa = require('alfalfa');
+const alfalfa = require('../../lib/');
 const server = require('./server');
-const client = require('./mongoclient');
+const client = require('./db');
 const httpAgent = require('./httpagent');
 const config = require('./config');
 
@@ -22,8 +22,7 @@ startup.use(new alfalfa.ServerRunner({
 }));
 
 startup.use(new alfalfa.MongoRunner({
-  client,
-  uri: config.get('db')
+  client
 }));
 
 module.exports = startup;

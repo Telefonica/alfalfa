@@ -44,7 +44,7 @@ app.use((function(err, req, res, next) {
 app.use(therrorHandler());
 
 function getMongoVersion() {
-  return db().admin().buildInfo()
+  return db.db().admin().buildInfo()
     .then(info => info.version);
 }
 

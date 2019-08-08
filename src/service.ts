@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Therror, { Classes }  from 'therror';
+import Therror from 'therror';
 
-import { Runner, logger } from './';
+import { Runner } from './';
 import { Errors } from './errors';
 
 export interface ServiceRunnerOptions {
@@ -37,7 +37,7 @@ export class ServiceRunner extends Runner<any[]> {
 
   constructor(opt: ServiceRunnerOptions) {
     super('Service');
-    this.runners = opt.runners;
+    this.runners = opt.runners || [];
   }
 
   /**
@@ -47,20 +47,12 @@ export class ServiceRunner extends Runner<any[]> {
    */
   protected doStart(): Promise<any[]> {
     let resolutions: any[] = [];
-    let promise = Promise.resolve();
-    for (let runner of this.runners) {
-      promise = promise
+    return this.runners
+      .reduce((promise, runner) => promise
         .then(() => runner.start())
-        .then(resolved => {
-          resolutions.push(resolved);
-          return resolved;
-        });
-    }
-    promise = promise.then(() => {
-      return resolutions;
-    });
-
-    return promise;
+        .then(resolved => { resolutions.push(resolved) })
+        , Promise.resolve())
+      .then(() => resolutions);
   }
 
   /**
@@ -71,26 +63,20 @@ export class ServiceRunner extends Runner<any[]> {
   protected doStop(): Promise<any[]> {
     let resolutions: any[] = [];
     let errors: any[] = [];
-    let promise = Promise.resolve();
-    for (let runner of this.runners) {
-       promise = promise
+
+    return this.runners
+      .reduce((promise, runner) => promise
         .then(() => runner.stop())
-        .then(resolved => {
-          resolutions.push(resolved);
-        })
-        .catch(err => {
-          errors.push(err);
-        });
-    }
-    promise = promise.then(() => {
-      if (errors.length === 0) {
-        return resolutions;
-      }
+        .then(resolved => { resolutions.push(resolved) })
+        .catch(err => { errors.push(err) })
+        , Promise.resolve())
+      .then(() => {
+        if (errors.length === 0) {
+          return resolutions;
+        }
 
-      throw new ServiceRunnerErrors.StopError({ errors });
-    });
-
-    return promise;
+        throw new ServiceRunnerErrors.StopError({ errors });
+      });
   }
 }
 

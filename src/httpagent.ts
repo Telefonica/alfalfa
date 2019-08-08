@@ -14,10 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Therror, { Classes }  from 'therror';
-
-import { Runner, logger } from './';
-import { Errors } from './errors';
+import { Runner } from './';
 import { Agent } from 'http';
 
 export interface HTTPAgentOptions {
