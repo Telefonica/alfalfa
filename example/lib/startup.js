@@ -1,28 +1,12 @@
-'use strict';
+import alfalfa from 'alfalfa';
 
-const alfalfa = require('alfalfa');
-const server = require('./server');
-const client = require('./db');
-const httpAgent = require('./httpagent');
-const config = require('./config');
+import { server } from './server.js';
+import { agent } from './agent.js';
 
-let startup = new alfalfa.Startup();
+export const startup = alfalfa.Startup('MyService');
 
-startup.check(() => config.validate());
-
-startup.use(new alfalfa.HTTPAgentRunner({
-  name: 'KeepAlivedHTTPAgent',
-  agent: httpAgent
-}));
-
-startup.use(new alfalfa.ServerRunner({
-  name: 'MyServer',
+startup.use(alfalfa.AgentRunner({ agent }));
+startup.use(alfalfa.ServerRunner({
   server,
-  port: config.get('port')
+  port: 3000
 }));
-
-startup.use(new alfalfa.MongoRunner({
-  client
-}));
-
-module.exports = startup;

@@ -8,38 +8,31 @@
 ## Usage
 
 ```js
-const alfalfa = require('alfalfa');
-const express = require('express');
-const http = require('http');
-// Compatible with > 3.2 driver
-const MongoClient = require('mongodb').MongoClient;
+import alfalfa from 'alfalfa';
+import express from 'express';
+import http from 'http';
 
-const config = require('./config');
+const app = express();
 
 let app = express(); // use your favorite framework
 let server = http.createServer(app); // your app will be exposed as an http server
-let client = new MongoClient('mongodb://localhost:27017/alfalfa');
 let agent = new http.Agent({ keepAlive: true });
 
 // Create a startup way to bring up your service
-let startup = new alfalfa.Startup();
+let startup = alfalfa.Startup();
 
 // Check some preconditions before starting
-startup.check(() => config.validate());
 
 // Configure the runners you want to use
-startup.use(new alfalfa.HTTPAgentRunner({ agent }));
-startup.use(new alfalfa.ServerRunner({ server, port: 3000 }));
-startup.use(new alfalfa.MongoRunner({ client }));
+startup.use(alfalfa.AgentRunner({ agent }));
+startup.use(alfalfa.ServerRunner({ server, port: 3000 }));
 
 startup.bootstap('Service'); // Yeah! Create the process with title 'Service'
 ```
 
 What's is going on here? Alfalfa bootstraps your app by starting each one of the runners defined.
 Each runner is a proven block that saves you from writing boilerplate and error-prone code again and again.
-There are several runners available. More on this can be found in the [example folder](example/).
-
-![Alfalfa demo][alfalfademo]
+There are several runners available. More on this can be found in the [example folder](./example/).
 
 Moreover, alfafa also prints traces for monitoring the startup, and manages the operating system
 signals and unhandled exceptions/rejections/warnings.
@@ -47,14 +40,14 @@ signals and unhandled exceptions/rejections/warnings.
 ```sh
 node server.js
 
-INFO  Server ready { address: '::', family: 'IPv6', port: 3000 }
-INFO  MongoDB ready { uri: 'mongodb://localhost:27017/alfalfa' }
-INFO  Service ready
+HTTPServer listening on http://0.0.0.0:3001
+HTTPServer ready
+MyService ready
 <-- Crtl-C
-WARN  Stopping Service
-INFO  Server stopped
-INFO  MongoDB stopped
-INFO  Service stopped
+Stopping MyService. SIGINT received
+Stopping HTTPServer
+Stopping HTTPAgent
+MyService stopped
 ````
 
 ## Available Runners
@@ -64,18 +57,13 @@ Starts a node server in the specified port. Features:
  - Adds listeners to the server to print its lifecycle, allowing monitorization.
  - Adds support for a graceful shutdown, with a 9.5s grace period.
 
-### MongoRunner
-Starts a mongodb client with the specified options. Features:
- - Adds listeners to the connection to print its lifecycle, allowing monitorization.
- - Adds support for retrying the connection at runtime and at *startup time*.
-
-### HTTPAgentRunner
+### AgentRunner
 Tracks a KeepAlived [http.Agent](https://nodejs.org/api/http.html#http_new_agent_options). Features:
  - Destroys the keep alived sokets when the service shutdows
 
 ## LICENSE
 
-Copyright 2016 [Telefónica I+D](http://www.tid.es)
+Copyright 2022 [Telefónica I+D](http://www.tid.es)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -90,4 +78,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 [alfalfalogo]: art/alfalfa-githubbanner.png
-[alfalfademo]: art/demo.gif
