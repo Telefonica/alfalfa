@@ -27,3 +27,4 @@ CONTRIBUTING.md
 *.spec.js
 *.spec.ts
 
+*.tsbuildinfo

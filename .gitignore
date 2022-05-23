@@ -41,3 +41,5 @@ typings/
 lib/
 !example/lib
 src/**/*.js
+*.tsbuildinfo
+*.tgz

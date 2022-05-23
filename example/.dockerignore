@@ -1,6 +1,0 @@
-node_modules
-test
-.*
-*.md
-ts*.json
-art

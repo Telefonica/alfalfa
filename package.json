@@ -1,6 +1,6 @@
 {
   "name": "alfalfa",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Startup pattern for node servers",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -14,60 +14,32 @@
     "server",
     "binary"
   ],
-  "author": "Javier Mendiara Cañardo <jmendiara@gmail.com>",
+  "author": "Telefonica",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/Telefonica/alfalfa/issues"
   },
   "homepage": "https://github.com/Telefonica/alfalfa#readme",
-  "scripts-info": {
-    "info": "List available scripts",
-    "build": "Builds the plugin, by cleaning and compiling TypesScript into Javascript",
-    "compile": "Just compiles your code",
-    "lint": "Check coding guidelines conformance",
-    "security": "Check if your dependencies are secure",
-    "test": "Test your codebase"
-  },
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "tsc",
-    "clean": "shx rm -fR ./lib",
-    "info": "npm-scripts-info",
-    "lint": "tslint './src/**/*.ts'",
-    "prepublish": "npm run build",
-    "start": "./example/bin/server",
-    "test": "npm run build && mocha -R spec 'lib/**/*.spec.js'",
-    "watch": "npm run build && npm-run-all --parallel watch:*",
-    "watch:ts": "tsc -w"
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -fR ./lib && rm *.tsbuildinfo || true",
+    "format": "prettier --write '**/*.{ts,json}'",
+    "prewatch": "npm run clean",
+    "watch": "tsc -w -p tsconfig.json",
+    "prepare": "npm run build"
   },
   "dependencies": {
-    "bluebird": "^3.5.5",
-    "bluebird-retry": "^0.11.0",
-    "logops": "^2.1.0",
-    "server-terminate": "^1.5.0",
-    "therror": "^4.1.0"
+    "server-terminate": "^1.5.0"
   },
   "devDependencies": {
-    "@types/mongodb": "^3.1.32",
-    "@types/bluebird-retry": "0.11.4",
-    "@types/bluebird": "^3.5.27",
-    "@types/chai": "^4.1.7",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^10.0.0",
-    "@types/sinon-chai": "^3.2.2",
-    "@types/sinon": "^7.0.13",
-    "chai": "^4.2.0",
-    "mocha": "^6.2.0",
-    "nodemon": "^1.19.1",
-    "npm-run-all": "^4.1.5",
-    "npm-scripts-info": "^0.3.9",
-    "shx": "^0.3.2",
-    "sinon-chai": "^3.3.0",
-    "sinon": "^7.4.1",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "@types/node": "^16.0.0",
+    "prettier": "^2.6.2",
+    "typescript": "^4.6.4"
   },
-  "engines": {
-    "node": ">=4"
+  "prettier": {
+    "printWidth": 120,
+    "semi": true,
+    "singleQuote": true
   }
 }

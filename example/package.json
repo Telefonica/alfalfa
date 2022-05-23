@@ -3,22 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "description": "An alfalfa example",
+  "type": "module",
   "main": "lib/index.js",
-  "scripts": {
-    "start": "LOGOPS_FORMAT=dev ./bin/server"
-  },
   "author": "Javier Mendiara Cañardo <jmendiara@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@hapi/joi": "15.1.0",
-    "alfalfa": "^3.0.0",
-    "commander": "^2.20.0",
-    "convict": "^2.0.0",
-    "convict-commander": "^2.0.0",
-    "express": "^4.17.1",
-    "logops": "^2.1.0",
-    "mongodb": "^3.2.0",
-    "therror": "^4.1.0",
-    "therror-connect": "^2.2.1"
+    "alfalfa": "file:../",
+    "express": "^4.17.1"
   }
 }
